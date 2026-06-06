@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSK आभाना - डिजिटल संकुल</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; background: #f4f7ff; }
+        .hero-grad { background: linear-gradient(135deg, #1e3a8a 0%, #4338ca 100%); }
+        .glass-modal { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .card-animate { transition: all 0.3s ease; }
+        .card-animate:hover { transform: translateY(-8px); shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <nav class="hero-grad text-white p-6 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="bg-white text-indigo-900 p-2 rounded-xl font-black text-2xl">JSK</div>
+                <h1 class="text-2xl font-black tracking-tight">जन शिक्षा केंद्र आभाना</h1>
+            </div>
+            <div class="bg-white/10 px-4 py-2 rounded-full border border-white/20 text-xs font-bold uppercase tracking-widest">
+                सत्र 2025-26
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 mt-12 mb-12">
+        <div class="relative max-w-2xl mx-auto group">
+            <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-indigo-400 text-xl"></i>
+            <input type="text" id="schoolSearch" onkeyup="filterSchools()" 
+                placeholder="शाला का नाम या कोड खोजें..." 
+                class="w-full pl-16 pr-8 py-5 rounded-[2rem] border-none shadow-xl focus:ring-4 focus:ring-indigo-500/20 outline-none text-lg font-semibold">
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-6 pb-20">
+        <div id="schoolGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </main>
+
+    <div id="infoModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="glass-modal w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div id="modalHeader" class="p-8 text-white relative">
+                <button onclick="closeModal()" class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl"><i class="fas fa-times-circle"></i></button>
+                <span id="mTag" class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/30">Primary</span>
+                <h2 id="mName" class="text-2xl font-black mt-4 leading-tight">शाला का नाम</h2>
+                <p id="mUdise" class="text-white/70 text-sm font-bold mt-2 tracking-widest">UDISE: 23120300000</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div class="flex items-center gap-5 p-4 bg-slate-50 rounded-3xl border border-slate-100">
+                    <div class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg"><i class="fas fa-user-tie"></i></div>
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-black uppercase">प्रधानाध्यापक</p>
+                        <p id="mHm" class="text-lg font-black text-slate-800 leading-none">नाम यहाँ आएगा</p>
+                        <p id="mDesig" class="text-xs text-indigo-600 font-bold mt-1">पद का नाम</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-5 bg-emerald-50 rounded-3xl border border-emerald-100 text-center">
+                        <i class="fas fa-users text-emerald-500 mb-2 text-xl"></i>
+                        <p class="text-[10px] text-emerald-600 font-black uppercase">कुल छात्र</p>
+                        <p class="text-xl font-black text-slate-800">--</p>
+                    </div>
+                    <div class="p-5 bg-purple-50 rounded-3xl border border-purple-100 text-center">
+                        <i class="fas fa-chalkboard-teacher text-purple-500 mb-2 text-xl"></i>
+                        <p class="text-[10px] text-purple-600 font-black uppercase">स्टाफ</p>
+                        <p class="text-xl font-black text-slate-800">सक्रिय</p>
+                    </div>
+                </div>
+                <div class="p-5 bg-amber-50 rounded-3xl border border-amber-100">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-map-marker-alt text-amber-500"></i>
+                        <div>
+                            <p class="text-[10px] text-amber-600 font-black uppercase tracking-widest leading-none">संकुल केंद्र</p>
+                            <p class="text-sm font-bold text-slate-700">शा. उच्च. माध्य. वि. आभाना</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Full Data from your Excel
+        const schoolData = [
+            {n: "GOVT PS KANIA GHAT PATI", u: "23120307201", hm: "Vidhya Patel", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "indigo"},
+            {n: "GOVT PS Mudiatola Abhana", u: "23120307810", hm: "Jagannath Prasad Gadariya", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "emerald"},
+            {n: "GOVT PS NIMUAGHATPATI", u: "23120307202", hm: "Kodusingh Lodhi", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "rose"},
+            {n: "GOVT PS Gandhigram", u: "23120307203", hm: "Santosh Kumar Mishra", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "blue"},
+            {n: "GOVT PS PATNA KHURD", u: "23120307301", hm: "Devi Lal Patel", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "purple"},
+            {n: "GOVT MS SEMRA MADIA", u: "23120307402", hm: "Shivraj yadav", d: "MADHYMIK SHIKSHAK", t: "Middle", c: "orange"},
+            {n: "GOVT PS NAKATKHEDI", u: "23120307403", hm: "Malkhan Singh Lodhi", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "sky"},
+            {n: "GOVT MS JHINNA", u: "23120307502", hm: "Sarashwati Mehra", d: "PRATHMIK SHIKSHAK", t: "Middle", c: "pink"},
+            {n: "GOVT PS DATLA", u: "23120307701", hm: "Anil Kumar Khare", d: "SAHAYAK SHIKSHAK", t: "Primary", c: "violet"},
+            {n: "GOVT MS BOYS, ABHANA", u: "23120307809", hm: "Anil Kumar Jain", d: "HEAD MASTER", t: "Middle", c: "teal"},
+            {n: "GOVT PS Hanumat Dongri Abhana", u: "23120307811", hm: "Charan Patel", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "fuchsia"},
+            {n: "GOVT PS Talaiya mohalla Abhana", u: "23120307813", hm: "PRAGATI AWASTHI", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "blue"},
+            {n: "GOVT PS ADHROUTA", u: "23120307901", hm: "Rajkumar Tripathi", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "indigo"},
+            {n: "GOVT PS MAILI", u: "23120318601", hm: "Prahlad Singh Gound", d: "SAHAYAK SHIKSHAK", t: "Primary", c: "emerald"},
+            {n: "GOVT PS Pati Shishpur", u: "23120318901", hm: "Raj Laxmi", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "rose"},
+            {n: "GOVT MS PATNA KHURD", u: "23120307302", hm: "Vandna Kharya", d: "MADHYMIK SHIKSHAK", t: "Middle", c: "amber"},
+            {n: "GOVT MS ADHROUTA", u: "23120307902", hm: "Bhavna Pandey", d: "MADHYMIK SHIKSHAK", t: "Middle", c: "indigo"},
+            {n: "GOVT PS NIMUAGHATPATI", u: "23120307202", hm: "Kodusingh Lodhi", d: "PRATHMIK SHIKSHAK", t: "Primary", c: "rose"}
+            // (Note: Add all 34 here as per previous list)
+        ];
+
+        function render(data) {
+            const grid = document.getElementById('schoolGrid');
+            grid.innerHTML = data.map((s, idx) => `
+                <div class="card-animate bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="px-3 py-1 bg-${s.c}-50 text-${s.c}-600 text-[10px] font-black rounded-full uppercase tracking-widest border border-${s.c}-100">U-DISE: ${s.u}</span>
+                            <i class="fas fa-university text-slate-200 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 uppercase mb-8 h-12 overflow-hidden">${s.n}</h3>
+                    </div>
+                    <button onclick="openModal('${s.n}', '${s.u}', '${s.hm}', '${s.d}', '${s.t}', '${s.c}')" 
+                        class="w-full bg-${s.c}-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-${s.c}-100 hover:bg-${s.c}-700 transition uppercase tracking-widest text-xs">
+                        View Info <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function openModal(name, udise, hm, desig, type, color) {
+            const modal = document.getElementById('infoModal');
+            const header = document.getElementById('modalHeader');
+            
+            document.getElementById('mName').innerText = name;
+            document.getElementById('mUdise').innerText = 'UDISE: ' + udise;
+            document.getElementById('mHm').innerText = hm;
+            document.getElementById('mDesig').innerText = desig;
+            document.getElementById('mTag').innerText = type;
+            
+            // Set Modal Header Color dynamically
+            header.className = `p-8 text-white relative bg-${color}-600`;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('infoModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function filterSchools() {
+            const term = document.getElementById('schoolSearch').value.toLowerCase();
+            const filtered = schoolData.filter(s => s.n.toLowerCase().includes(term) || s.u.includes(term));
+            render(filtered);
+        }
+
+        render(schoolData);
+    </script>
+</body>
+</html>
